@@ -1,23 +1,54 @@
 package util;
 
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
+
 public class Converter {
-    public static <S, T> T convert(S source, T target, FieldMapper<S, T> mapper) {
+    public static <S, T> T convert(S source, T target, FieldMapper<S, T> mapper) throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchFieldException {
         if (source == null) {
             throw new IllegalArgumentException("Source cannot be null");
         }
 
         if (target == null) {
-            target = createInstance(mapper.getTargetClass());
+            if (mapper == null) {
+                try {
+                    System.err.println("Mapper cannot be null for Converting plz Enter the Mapper, if you have the diffrent name for Fields");
+                    Class<?> sourceClass = source.getClass();
+                    String entitySimpleName = sourceClass.getSimpleName();
+
+                    String dtoSimpleName = entitySimpleName.endsWith("Entity")
+                            ? entitySimpleName.substring(0, entitySimpleName.length() - 6) + "Dto"
+                            : entitySimpleName + "Dto";
+
+                    String packageName = sourceClass.getPackage().getName();
+                    String dtoPackageName = packageName.contains("entity")
+                            ? packageName.replace("entity", "dto")
+                            : packageName + ".dto";
+
+                    String fullDtoClassName = dtoPackageName + "." + dtoSimpleName;
+
+                    Class<?> dtoClass = Class.forName(fullDtoClassName);
+                    target = (T) createInstance(dtoClass);
+
+                } catch (Exception e) {
+                    throw new RuntimeException("Cannot create instance of " + source.getClass().getName(), e);
+                }
+            } else {
+                target = createInstance(mapper.getTargetClass());
+            }
         }
 
-        Map<String, String> mapping = mapper.getSourceToTargetMapping();
+        Map<String, String> mapping = (mapper != null)
+                ? mapper.getSourceToTargetMapping()
+                : new HashMap<>();
 
         for (Method getter : getGetters(source.getClass())) {
             String propertyName = extractPropertyName(getter);

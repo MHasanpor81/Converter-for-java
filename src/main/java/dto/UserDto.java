@@ -1,24 +1,24 @@
 package dto;
 
 public class UserDto extends BaseDto<Integer> {
-    private String fullName;
-    private String emailAddress;
+    private String name;
+    private String email;
     private int age;
 
-    public String getFullName() {
-        return fullName;
+    public String getName() {
+        return name;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getEmailAddress() {
-        return emailAddress;
+    public String getEmail() {
+        return email;
     }
 
-    public void setEmailAddress(String emailAddress) {
-        this.emailAddress = emailAddress;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public int getAge() {
@@ -33,8 +33,8 @@ public class UserDto extends BaseDto<Integer> {
     public String toString() {
         return "EntityDto{" +
                 "id='" + getId()+"," + '\'' +
-                "fullName='" + fullName + '\'' +
-                ", emailAddress='" + emailAddress + '\'' +
+                "fullName='" + name + '\'' +
+                ", emailAddress='" + email + '\'' +
                 ", age=" + age +
                 '}';
     }
